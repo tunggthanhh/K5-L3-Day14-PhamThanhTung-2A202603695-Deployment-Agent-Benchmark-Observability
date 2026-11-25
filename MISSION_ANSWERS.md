@@ -76,7 +76,7 @@ Railway uses a TOML deploy configuration managed with the Railway service. Rende
 
 ### Deployment status
 
-The Part 6 agent is deployed on Render at `https://k5-l3-day14-phamthanhtung-2a202603695.onrender.com` with a Render Key Value Redis-compatible service. On 25 November 2026, `/health` and `/ready` returned 200, `/ask` without a key returned 401, and the user verified an authenticated `/ask` request returned 200 in the API documentation. Dashboard and test screenshots still need to be added to the repository. A key was exposed in a testing screenshot and must be rotated.
+The Part 6 agent is deployed on Render at `https://k5-l3-day14-phamthanhtung-2a202603695.onrender.com` with a Render Key Value Redis-compatible service. On 25 November 2026, `/health` and `/ready` returned 200, `/ask` without a key returned 401, and the user verified an authenticated `/ask` request returned 200 in the API documentation. Dashboard and live-status screenshots are in `screenshots/`; the API test-result screenshot still needs to be added. A key was exposed in a testing screenshot and must be rotated.
 
 ## Part 4: API Security
 

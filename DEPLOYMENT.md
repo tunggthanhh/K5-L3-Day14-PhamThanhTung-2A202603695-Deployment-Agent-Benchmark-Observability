@@ -42,11 +42,12 @@ curl -sS -o /dev/null -w '%{http_code}\n' -X POST "$BASE/ask" \
   -d '{"question":"Hello"}'
 ```
 
-## Screenshots to add after deployment
+## Screenshots
 
-- `screenshots/dashboard.png`: Railway/Render deployment dashboard.
-- `screenshots/running.png`: service shown as running/healthy.
-- `screenshots/test.png`: four verification results above, with the secret hidden.
+- [Render deployment dashboard](screenshots/dashboard.png).
+- [Render service live status](screenshots/running.png).
+- [API documentation](screenshots/api-docs.png).
+- Still needed: `screenshots/test.png` showing the API verification results without revealing the key. The API documentation screenshot alone does not show the response.
 
 ## Local verification already completed
 

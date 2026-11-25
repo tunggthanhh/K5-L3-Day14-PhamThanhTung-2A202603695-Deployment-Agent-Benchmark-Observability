@@ -47,7 +47,7 @@ curl -sS -o /dev/null -w '%{http_code}\n' -X POST "$BASE/ask" \
 - [Render deployment dashboard](screenshots/dashboard.png).
 - [Render service live status](screenshots/running.png).
 - [API documentation](screenshots/api-docs.png).
-- Still needed: `screenshots/test.png` showing the API verification results without revealing the key. The API documentation screenshot alone does not show the response.
+- [Authenticated API response](screenshots/test.png): HTTP 200 with the key hidden. This image shows the authenticated response; the other checks are recorded above.
 
 ## Local verification already completed
 

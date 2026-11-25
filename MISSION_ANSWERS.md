@@ -68,6 +68,17 @@ The Part 6 agent is deployed on Render at `https://k5-l3-day14-phamthanhtung-2a2
 
 ## Part 4: API Security
 
+### Exercise 4.2?4.3: JWT and sliding window test
+
+Using FastAPI TestClient against `04-api-gateway/production/app.py` (in process), a request without a bearer token returned 401. `POST /auth/token` with the provided demo student account returned 200; the token was used without saving it to the report. Eleven authenticated requests returned:
+
+```text
+200 200 200 200 200 200 200 200 200 200 429
+```
+
+The demo uses a per-user sliding window of timestamps: 10 requests per 60 seconds for a user and 100 for an admin. Admins have a higher limit, not an unlimited bypass. Its limiter is in memory and is unsuitable for shared state across instances; the final Part 6 limiter uses Redis. The demo signs JWTs with HS256 and checks signature and expiry before accepting a request.
+
+
 The final agent was exercised by `check_production_ready.py` with these verified outcomes:
 
 | Control | Result |

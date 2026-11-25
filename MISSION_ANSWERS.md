@@ -30,10 +30,14 @@ The development agent is intended for a local workflow and accepts `question` th
 
 ### Exercise 2.1: Dockerfile questions
 
-1. The final image uses `python:3.11-slim` to reduce image size.
+The questions refer to `02-docker/develop/Dockerfile`:
+
+1. The base image is `python:3.11` (full Python image).
 2. The working directory is `/app`.
-3. The Dockerfile uses a builder stage to install dependencies and a runtime stage that copies only the installed packages and application code.
-4. `requirements.txt` is copied before application code so dependency layers can be cached when only source code changes.
+3. Copying `requirements.txt` before the application allows Docker to reuse the dependency-install layer when application code changes but dependencies do not.
+4. `ENTRYPOINT` defines the container's main executable; `CMD` supplies its default arguments, or the default command when no entrypoint is defined. Runtime arguments can override CMD.
+
+The final Part 6 project uses a different multi-stage Dockerfile based on `python:3.11-slim`.
 
 ### Exercise 2.3: Final-project image measurement
 

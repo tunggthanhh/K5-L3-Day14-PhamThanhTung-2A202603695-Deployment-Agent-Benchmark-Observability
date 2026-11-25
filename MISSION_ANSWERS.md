@@ -102,6 +102,11 @@ Rate limiting protects availability by limiting request frequency. The cost guar
 
 ## Part 5: Scaling & Reliability
 
+### Exercise 5.4: Three-instance stateless test
+
+On EC2, I ran the supplied `05-scaling-reliability/production` Compose stack with three agent replicas, Redis and Nginx, binding the test port to loopback. `python3 test_stateless.py` sent five requests in the same session; Nginx routed them to **three distinct instances**, and the final history contained **10 messages** (five user messages and five responses). This demonstrates that the tested session history was shared across those replicas through Redis. The isolated test project was stopped after the test.
+
+
 - `/health` is a liveness endpoint and stays 200 while the process runs, including when Redis is unavailable.
 - `/ready` is a readiness endpoint and returns 503 when Redis is unavailable, so a load balancer can stop sending traffic to an unready instance.
 - Rate-limit and cost state are stored in Redis rather than memory, so restarts and multiple workers share the same state.

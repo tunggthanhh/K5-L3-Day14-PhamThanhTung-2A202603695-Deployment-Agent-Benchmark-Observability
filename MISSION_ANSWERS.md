@@ -13,7 +13,7 @@
 
 ### Exercise 1.2: Local test result
 
-The development agent is intended for a local workflow and accepts `question` through the query string. The production-oriented implementation uses a JSON body and explicit health/readiness behaviour.
+Using FastAPI TestClient against `01-localhost-vs-production/develop/app.py`, `POST /ask?question=Hello` returned HTTP 200 and a mock answer. This is an in-process HTTP test, not a network deployment. The starter uses a query parameter; the final Part 6 implementation uses a JSON body. The starter also printed its explicitly fake hardcoded demo key in debug logs, illustrating the secret-logging anti-pattern.
 
 ### Exercise 1.3: Develop vs production
 

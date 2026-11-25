@@ -55,7 +55,9 @@ The full checker built the final image successfully at **238 MB**, below the 500
 
 ### Exercise 2.4: Stack design
 
-`docker-compose.yml` defines two services: `agent` is built from the project Dockerfile and depends on a healthy `redis` service. `REDIS_URL=redis://redis:6379/0` connects the agent to Redis. Redis persists data in the `redis-data` volume.
+The Exercise 2.4 stack in `02-docker/production/docker-compose.yml` has four services: client ? Nginx reverse proxy ? agent, with Redis and Qdrant on the internal network. Compose waits for Redis and Qdrant health before starting the agent; their data volumes are separate. The sample agent itself does not demonstrate actual Redis or Qdrant use merely by having URLs configured.
+
+On EC2, I started this stack under an isolated Compose project with the published ports bound to localhost. Through Nginx, `GET /health` returned HTTP 200 and `POST /ask` with `{"question":"Explain microservices"}` returned HTTP 200 with a mock answer. The isolated test stack was stopped afterward. The separate final Part 6 Compose stack contains agent and Redis.
 
 ## Part 3: Cloud Deployment
 

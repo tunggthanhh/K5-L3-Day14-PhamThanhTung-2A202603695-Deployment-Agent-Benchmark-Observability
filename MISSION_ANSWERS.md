@@ -80,6 +80,10 @@ The Part 6 agent is deployed on Render at `https://k5-l3-day14-phamthanhtung-2a2
 
 ## Part 4: API Security
 
+### Exercise 4.1: API-key starter test
+
+FastAPI TestClient against `04-api-gateway/develop/app.py` returned 401 for a missing key, 403 for an invalid key, and 200 for a valid throwaway test key. The starter checks the `X-API-Key` header in `verify_api_key`; rotation means replacing the `AGENT_API_KEY` environment value and restarting the process. This sample uses different invalid-key status semantics from the final Part 6 implementation, which returns 401 for both missing and invalid keys.
+
 ### Exercise 4.2?4.3: JWT and sliding window test
 
 Using FastAPI TestClient against `04-api-gateway/production/app.py` (in process), a request without a bearer token returned 401. `POST /auth/token` with the provided demo student account returned 200; the token was used without saving it to the report. Eleven authenticated requests returned:

@@ -140,6 +140,10 @@ Result: 12/12 tiêu chí đạt · 43/43 checks passed
 
 The built image measured 56 MB in that Docker environment. The in-flight request completed with HTTP 200 after SIGTERM and the process exited with code 0. Docker stop completed in 1.3 seconds.
 
+### Windows static recheck
+
+On 25 November 2026, the current Windows checkout passed 28/28 checks run by `python check_production_ready.py --static-only`. This is a static-only check and does not replace the full Linux 12/12 run above. On this Windows terminal, `PYTHONIOENCODING=utf-8` was needed to print the checker's Unicode output.
+
 ## AI assistance log
 
 AI assistant (Codex) was used extensively in this submission. The user requested help completing the Day 14 lab, troubleshooting Docker and deploying the agent. The assistant inspected the starter code and assignment, made the Part 6 implementation changes and prepared the reports; the user configured the Render service and tested the authenticated endpoint. The following record does not claim that the student independently authored or reviewed the AI-generated changes.

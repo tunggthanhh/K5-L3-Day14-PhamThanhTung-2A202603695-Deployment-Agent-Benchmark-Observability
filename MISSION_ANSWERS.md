@@ -11,6 +11,8 @@
 5. Abrupt process termination can drop in-flight requests; the service needs graceful SIGTERM handling.
 6. Calling an upstream LLM without request limits or a budget guard can cause abuse and uncontrolled spending.
 
+Concrete examples in the supplied starter: `01-localhost-vs-production/develop/app.py:17?18` hardcodes demo credentials; line 34 prints the fake API key; lines 51?53 bind localhost, fix port 8000 and enable reload. The advanced sample uses `settings.host` and `settings.port` (`production/app.py:196?197`), and defines `/health` (`production/app.py:135`). The credentials in the starter are explicitly fake examples.
+
 ### Exercise 1.2: Local test result
 
 Using FastAPI TestClient against `01-localhost-vs-production/develop/app.py`, `POST /ask?question=Hello` returned HTTP 200 and a mock answer. This is an in-process HTTP test, not a network deployment. The starter uses a query parameter; the final Part 6 implementation uses a JSON body. The starter also printed its explicitly fake hardcoded demo key in debug logs, illustrating the secret-logging anti-pattern.

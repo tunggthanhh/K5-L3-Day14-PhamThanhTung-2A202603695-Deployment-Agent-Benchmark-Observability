@@ -41,6 +41,10 @@ The questions refer to `02-docker/develop/Dockerfile`:
 
 The final Part 6 project uses a different multi-stage Dockerfile based on `python:3.11-slim`.
 
+### Exercise 2.2: Run the Docker examples
+
+On EC2, both built example containers were started on loopback-only ports and `/health` was requested over HTTP. The develop container returned HTTP 200 with `status: ok` and `container: true`; the production container returned HTTP 200 with `status: ok` and `version: 2.0.0`. Both temporary containers were stopped after the test.
+
 ### Exercise 2.3: Example image comparison
 
 Built the two `02-docker` Dockerfiles on Linux EC2 and measured `docker image inspect` `Size` (decimal MB): develop **426.32 MB** (426,319,482 bytes), production **57.41 MB** (57,408,303 bytes), a **86.53% reduction**. The multi-stage production image keeps installed runtime dependencies while leaving build tools in the builder stage; its slim base also contributes to the reduction. These are daemon-reported image sizes for this build, not disk usage on Windows.

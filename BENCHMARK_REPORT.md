@@ -82,6 +82,18 @@ Trace lỗi được tạo bằng `MOCK_ERROR_RATE=1`: request trả 503, trace 
 {"event":"llm_error","trace_id":"9ef4614d32858dd77c491ff84bdbbc3f","span_id":"7a4f35130b0bb9c8","request_id":"02d548ec44bf","error":"Upstream LLM error: 503 Service Unavailable (mock)"}
 ```
 
+The slow-trace screenshot corresponds to this application log (same trace ID, LLM span 1651.1 ms and HTTP request 1678.7 ms):
+
+```json
+{"event":"llm_call","trace_id":"8e2fef01115b13122b630bd81065bf93","span_id":"e92e89a3b6c9f5ab","request_id":"3f70dd3da942","model":"mock-llm-small","llm_ms":1651.1}
+```
+
+The error-trace screenshot corresponds to:
+
+```json
+{"event":"llm_error","trace_id":"2c182b71cfcc357049ee3dc344374f2f","span_id":"57fb964fcfd31185","request_id":"055bd87fd2ac","error":"Upstream LLM error: 503 Service Unavailable (mock)"}
+```
+
 ## 5. Benchmark scaling (production, Locust)
 
 Locust headless, 100 users, 2 phút; bảng lấy hàng `POST /ask` trong các file CSV tại `benchmark-results/` (percentile là giá trị xấp xỉ của Locust):

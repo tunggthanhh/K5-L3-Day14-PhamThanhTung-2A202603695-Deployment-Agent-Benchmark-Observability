@@ -62,7 +62,7 @@ Lệnh trả exit code khác 0 khi accuracy dưới ngưỡng hoặc có regress
 
 Stack local đã chạy Grafana, Prometheus, Jaeger và agent. Trong thí nghiệm kết hợp `MOCK_ERROR_RATE=0.2`, `MOCK_SLOW_RATE=0.3`, Locust 30 users, Prometheus ghi nhận đồng thời `AgentHighErrorRate` và `AgentHighLatencyP95` ở trạng thái firing. Mẫu quan sát cho thấy error rate khoảng 19.9% và p95 khoảng 1.90 s; đây là kết quả của thí nghiệm kết hợp, không tách riêng tác động từng biến. Alert error bắt đầu pending lúc 12:49:52 UTC với `for: 1m`, alert latency lúc 12:49:57 UTC với `for: 2m`; chưa đo chính xác thời điểm firing từ lúc thay đổi cấu hình.
 
-Ảnh dashboard, ảnh trace chậm/lỗi và ảnh trang Prometheus Alerts vẫn chưa có trong repo. Cần chụp bổ sung khi stack đang chạy; không coi dữ liệu API là thay thế cho ảnh theo yêu cầu nộp bài.
+Evidence: [Grafana dashboard](screenshots/grafana-dashboard.png), [two firing alerts](screenshots/prometheus-alert-firing.png), [Jaeger trace list](screenshots/jaeger-traces.png), [slow trace](screenshots/jaeger-slow-trace.png) and [error trace](screenshots/jaeger-error-trace.png). The screenshots show a later experiment than the JSON and logs below: slow trace `8e2fef01115b13122b630bd81065bf93` (about 1.7 s) and error trace `2c182b71cfcc357049ee3dc344374f2f` (HTTP 503). The JSON and logs below document separate earlier traces.
 
 Một request chậm được tạo có kiểm soát (`MOCK_SLOW_RATE=1`, `MOCK_ERROR_RATE=0`) trả 200, với header trace ID khớp log. Jaeger xác nhận trace `c3086b5894800cbe15bebbe639de1fe0`: span gốc `POST /ask` 1677.422 ms; span con chậm nhất `chat mock-llm-small` 1651.878 ms (98.5% tổng thời gian). Log tương ứng ghi HTTP 1676.3 ms và LLM 1652.4 ms:
 

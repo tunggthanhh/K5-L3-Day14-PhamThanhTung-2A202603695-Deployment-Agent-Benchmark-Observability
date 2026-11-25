@@ -62,6 +62,8 @@ Lệnh trả exit code khác 0 khi accuracy dưới ngưỡng hoặc có regress
 
 Stack local đã chạy Grafana, Prometheus, Jaeger và agent. Trong thí nghiệm kết hợp `MOCK_ERROR_RATE=0.2`, `MOCK_SLOW_RATE=0.3`, Locust 30 users, Prometheus ghi nhận đồng thời `AgentHighErrorRate` và `AgentHighLatencyP95` ở trạng thái firing. Mẫu quan sát cho thấy error rate khoảng 19.9% và p95 khoảng 1.90 s; đây là kết quả của thí nghiệm kết hợp, không tách riêng tác động từng biến. Alert error bắt đầu pending lúc 12:49:52 UTC với `for: 1m`, alert latency lúc 12:49:57 UTC với `for: 2m`; chưa đo chính xác thời điểm firing từ lúc thay đổi cấu hình.
 
+Prometheus rule unit tests were run using `promtool test rules /p/alert_rules_test.yml` in `prom/prometheus:v3.16.0`, with the supplied rules directory mounted read-only. Result: `SUCCESS` (exit code 0).
+
 A separate availability experiment paused the only lab agent container and polled the Prometheus Alerts API. `AgentInstanceDown` was pending at 15.0 s and firing when observed at 43.2 s after the pause (5 s polling interval plus request time). The container was unpaused in a finally block. The instance-up panel and Prometheus target health expose this failure. This was a separate test from the combined error/latency experiment above.
 
 A quality regression such as switching to v1 can leave operational alerts green. Detect it with version-labelled online quality indicators and a representative golden-set evaluation in CI; compare against a baseline and block releases on regression. The measured v1/v2 evaluation results above provide an offline example, not proof of online monitoring.

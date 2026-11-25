@@ -1,0 +1,113 @@
+# Day 14 Lab — Mission Answers
+
+## Part 1: Localhost vs Production
+
+### Exercise 1.1: Anti-patterns found
+
+1. Hard-code configuration or a secret makes rotation unsafe and prevents one image from serving multiple environments.
+2. Keeping state in process memory loses it after restart and breaks horizontal scaling.
+3. No liveness/readiness probes means an orchestrator cannot distinguish a live process from one ready for traffic.
+4. Default text logs are difficult to filter and correlate across services; JSON structured logs make fields queryable.
+5. Abrupt process termination can drop in-flight requests; the service needs graceful SIGTERM handling.
+6. Calling an upstream LLM without request limits or a budget guard can cause abuse and uncontrolled spending.
+
+### Exercise 1.2: Local test result
+
+The development agent is intended for a local workflow and accepts `question` through the query string. The production-oriented implementation uses a JSON body and explicit health/readiness behaviour.
+
+### Exercise 1.3: Develop vs production
+
+| Feature | Develop | Production | Why important |
+|---|---|---|---|
+| Configuration | Convenient local defaults | Environment variables | One artifact can run in dev/staging/prod without editing code. |
+| Secrets | Often local/demo values | Injected secret at runtime | Prevents credential leakage and supports rotation. |
+| State | May be memory-local | Redis-backed | Instances remain stateless and can scale horizontally. |
+| Health | Process-only feedback | `/health` + `/ready` | Separates liveness from dependency readiness. |
+| Shutdown | Manual stop | Uvicorn graceful shutdown | Lets in-flight requests finish. |
+| Logging | Human-readable console | JSON event logs | Enables search, metrics correlation and alerting. |
+
+## Part 2: Docker
+
+### Exercise 2.1: Dockerfile questions
+
+1. The final image uses `python:3.11-slim` to reduce image size.
+2. The working directory is `/app`.
+3. The Dockerfile uses a builder stage to install dependencies and a runtime stage that copies only the installed packages and application code.
+4. `requirements.txt` is copied before application code so dependency layers can be cached when only source code changes.
+
+### Exercise 2.3: Final-project image measurement
+
+The full checker built the final image successfully at **238 MB**, below the 500 MB requirement. It is multi-stage, runs as a non-root user, and exposes a Docker `HEALTHCHECK` for `/health`.
+
+### Exercise 2.4: Stack design
+
+`docker-compose.yml` defines two services: `agent` is built from the project Dockerfile and depends on a healthy `redis` service. `REDIS_URL=redis://redis:6379/0` connects the agent to Redis. Redis persists data in the `redis-data` volume.
+
+## Part 3: Cloud Deployment
+
+### Railway/Render configuration
+
+Both platform manifests are included in `06-lab-complete/`:
+
+- `railway.toml` selects the Dockerfile builder and uses `/health` as the health check path.
+- `render.yaml` defines a Docker web service, a `/health` check, generated `AGENT_API_KEY`, and a separately supplied `REDIS_URL`.
+
+Railway uses a TOML deploy configuration managed with the Railway service. Render uses a Blueprint YAML service declaration. Both must receive secrets from their platform environment-variable settings, not source code.
+
+### Exercise 3.3: Cloud Run CI/CD pipeline
+
+`cloudbuild.yaml` builds a container image, tags/pushes it to Artifact Registry, then deploys it to Cloud Run. `service.yaml` describes the running Cloud Run service, including its container and runtime settings. Cloud Build supplies the repeatable CI/CD execution; Cloud Run receives the immutable image and manages HTTPS/scaling. Secrets should be connected through platform configuration rather than baked into the image.
+
+### Deployment status
+
+The Part 6 agent is deployed on Render at `https://k5-l3-day14-phamthanhtung-2a202603695.onrender.com` with a Render Key Value Redis-compatible service. On 25 November 2026, `/health` and `/ready` returned 200, `/ask` without a key returned 401, and the user verified an authenticated `/ask` request returned 200 in the API documentation. Dashboard and test screenshots still need to be added to the repository. A key was exposed in a testing screenshot and must be rotated.
+
+## Part 4: API Security
+
+The final agent was exercised by `check_production_ready.py` with these verified outcomes:
+
+| Control | Result |
+|---|---|
+| Missing or invalid `X-API-Key` | HTTP 401 |
+| Valid API key | HTTP 200 |
+| Per-key rate limit | HTTP 429 after the configured limit; state survives agent restart because it is in Redis |
+| Exhausted budget | HTTP 402 |
+
+Rate limiting protects availability by limiting request frequency. The cost guard protects spend by retaining the accumulated estimated cost in Redis and rejecting further requests once the configured daily budget is reached. Both controls are needed because a low-rate client can still consume excessive expensive tokens, while a budget-only control does not stop traffic bursts.
+
+## Part 5: Scaling & Reliability
+
+- `/health` is a liveness endpoint and stays 200 while the process runs, including when Redis is unavailable.
+- `/ready` is a readiness endpoint and returns 503 when Redis is unavailable, so a load balancer can stop sending traffic to an unready instance.
+- Rate-limit and cost state are stored in Redis rather than memory, so restarts and multiple workers share the same state.
+- The FastAPI lifespan hook logs startup/shutdown; Uvicorn/Docker stop was verified to exit cleanly in 1.2 seconds.
+
+## Part 6: Production-readiness verification
+
+Full verification on this Windows host completed **42/42 individual checks**. Docker build, image size, runtime health, readiness, auth, Redis rate-limit persistence, budget guard, environment configuration, JSON logging, and Docker graceful stop all passed.
+
+The full checker was run on EC2 Linux using Python 3.11, Docker CLI and Compose, with a separate Redis test instance. It returned:
+
+```text
+📋 Checklist Deliverable
+   ✅ Dockerfile (multi-stage, < 500 MB)
+   ✅ docker-compose.yml (agent + redis)
+   ✅ .dockerignore
+   ✅ Health check endpoint (GET /health)
+   ✅ Readiness endpoint (GET /ready)
+   ✅ API Key authentication
+   ✅ Rate limiting
+   ✅ Cost guard
+   ✅ Config từ environment variables
+   ✅ Structured logging
+   ✅ Graceful shutdown
+   ✅ Public URL ready (Railway / Render config)
+Result: 12/12 tiêu chí đạt · 43/43 checks passed
+🎉 PASS 12/12 — PRODUCTION READY!
+```
+
+The built image measured 56 MB in that Docker environment. The in-flight request completed with HTTP 200 after SIGTERM and the process exited with code 0. Docker stop completed in 1.3 seconds.
+
+## AI assistance log
+
+AI assistance was used to inspect the provided starter project, implement the Part 6 TODOs, execute the readiness checker, run local Part 7 load/eval benchmarks, and prepare this report. All reported measured values came from generated JSON checker/benchmark output in this repository.
